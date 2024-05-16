@@ -51,13 +51,13 @@ def LLM_init():
     agent = create_openai_tools_agent(chat, tools, prompt)
     agent_executor  = AgentExecutor(agent=agent, tools=tools, verbose=True)
     MONGO_PWD = environ.get("MONGO_PWD")
-    
+
     agent_with_chat_history = RunnableWithMessageHistory(
         agent_executor,
         lambda session_id: MongoDBChatMessageHistory( database_name="travel",
                                                 collection_name="history",
                                                 #    connection_string=environ.get("MONGO_CONNECTION_STRING"),
-                                                connection_string= "mongodb+srv://upmadmin:" + urllib.parse.quote(MONGO_PWD) + "@cosmos-upmaisearch-dev-002.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000"
+                                                connection_string= "mongodb+srv://upmadmin:" + urllib.parse.quote(MONGO_PWD) + "@cosmos-upmaisearch-dev-002.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000",
                                                 session_id=session_id),
         input_messages_key="input",
         history_messages_key="chat_history",
