@@ -59,16 +59,15 @@ class CosmosDBLoader():
         loader = JSONDataLoader( )
 
         docs = None
-        if collection_name == 'ships':
-            docs = loader.load_ship(data)
-        else:
-            if collection_name == 'destinations':
+        if collection_name == 'incidents':
+            docs = loader.load_incident(data)
+        elif collection_name == 'requests':
                 docs = loader.load_destination(data)
         
 
         if docs != None:
             # OpenAI Settings
-            model_deployment = environ.get("OPENAI_EMBEDDINGS_DEPLOYMENT", "smart-agent-embedding-ada")
+            model_deployment = environ.get("OPENAI_EMBEDDINGS_DEPLOYMENT", "text-embedding-ada-002")
             model_name       = environ.get("OPENAI_EMBEDDINGS_MODEL_NAME", "text-embedding-ada-002")
             #load documents into Cosmos DB Vector Store
             vector_store = AzureCosmosDBVectorSearch.from_documents(

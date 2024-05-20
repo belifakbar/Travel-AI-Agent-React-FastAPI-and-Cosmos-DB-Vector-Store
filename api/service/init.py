@@ -7,7 +7,8 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.agents import AgentExecutor, create_openai_tools_agent
-from service import TravelAgentTools as agent_tools
+# from service import TravelAgentTools as agent_tools
+from service import ServicenowAgentTools as agent_tools
 
 load_dotenv(override=True)
 
@@ -31,13 +32,14 @@ def LLM_init():
     environ["AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"] = getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")  # the deployment model name
 
     chat = AzureChatOpenAI(openai_api_version=environ.get("AZURE_OPENAI_API_VERSION"),azure_deployment=environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),temperature=0)
-    tools = [agent_tools.vacation_lookup, agent_tools.itinerary_lookup, agent_tools.book_cruise ]
+    # tools = [agent_tools.vacation_lookup, agent_tools.itinerary_lookup, agent_tools.book_cruise ]
+    tools = [agent_tools.incident_lookup,agent_tools.latestincident_lookup]
 
     prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a helpful and friendly travel assistant for a cruise company. Answer travel questions to the best of your ability providing only relevant information. In order to book a cruise you will need to capture the person's name.",
+            "You are a helpful and friendly  assistant for handling System Incident ticket. Answer service now Incident questions to the best of your ability providing only relevant information and suggest Possible Closing Notes",
         ),
         MessagesPlaceholder(variable_name="chat_history"),
         ("user", "Answer should be embedded in html tags. {input}"),
@@ -54,7 +56,7 @@ def LLM_init():
 
     agent_with_chat_history = RunnableWithMessageHistory(
         agent_executor,
-        lambda session_id: MongoDBChatMessageHistory( database_name="travel",
+        lambda session_id: MongoDBChatMessageHistory( database_name="servicenow",
                                                 collection_name="history",
                                                 #    connection_string=environ.get("MONGO_CONNECTION_STRING"),
                                                 connection_string= "mongodb+srv://upmadmin:" + urllib.parse.quote(MONGO_PWD) + "@cosmos-upmaisearch-dev-002.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000",
